@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git e GitHub: Guia Prático e Referência</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f1f1f1; }
+      ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #555; }
+      .transition-all { transition: all 0.3s ease; }
+      .code-block {
+        font-family: "Courier New", monospace;
+        background-color: #2d2d2d;
+        color: #f8f8f2;
+        border-radius: 6px;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      .keyword  { color: #569cd6; }
+      .type     { color: #4ec9b0; }
+      .string   { color: #ce9178; }
+      .comment  { color: #6a9955; font-style: italic; }
+      .function { color: #dcdcaa; }
+      .builtin  { color: #c586c0; }
+      .pp       { color: #c586c0; } 
+      .number   { color: #b5cea8; }
+      .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+      .dropdown-content.open { max-height: 500px; }
+      .content-section { display: none; }
+      .content-section.active { display: block; }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-sans">
+
+    <header class="bg-blue-700 text-white shadow-lg">
+      <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
+          <div class="flex items-center">
+            <i class="fab fa-github text-3xl mr-3"></i>
+            <h1 class="text-2xl font-bold">Git e GitHub: Guia Prático</h1>
+          </div>
+          <button id="mobile-menu-btn" class="md:hidden text-white text-2xl focus:outline-none" title="Abrir sumário">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
+          <div class="relative w-full sm:w-64">
+            <input type="text" placeholder="Pesquisar"
+              class="px-4 py-2 rounded-full bg-blue-600 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full" />
+            <button class="absolute right-3 top-2 text-blue-300 hover:text-white">
+              <i class="fas fa-search"></i>
+            </button>
+            <div id="search-results"
+              class="absolute left-0 mt-2 w-full bg-white border border-gray-300 rounded shadow-lg z-50 hidden text-gray-800"></div>
+          </div>
+          <a href="../../index.html" class="inline-flex items-center px-3 py-2 bg-white text-blue-700 rounded-full shadow-sm hover:bg-blue-100 transition-all shrink-0" title="Voltar ao menu principal">
+            <i class="fas fa-home mr-2"></i>
+            Voltar
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <div class="flex flex-1 container mx-auto px-4 py-8">
+
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"></div>
+
+        <div id="sidebar" class="w-72 shrink-0 bg-white rounded-r-lg md:rounded-lg shadow-md p-4 mr-0 md:mr-8 fixed md:sticky top-0 md:top-8 left-0 h-screen md:h-fit z-50 md:z-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 overflow-y-auto md:overflow-visible">
+          <div class="p-4 border-b border-gray-200 flex justify-between items-center md:block md:p-0 md:border-none">
+            <h1 class="text-2xl font-bold md:mb-4 text-blue-700">Sumário</h1>
+            <button id="close-sidebar-btn" class="md:hidden text-gray-500 hover:text-blue-700 text-2xl focus:outline-none">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <nav>
+
+            <div class="mb-4 mt-4">
+              <a href="#introducao" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all"
+                data-section="introducao" data-explanation="Introdução ao Git e GitHub, história e importância no desenvolvimento moderno.">
+                <i class="fas fa-play mr-2 ml-2"></i>
+                <span class="flex items-center mr-12">Introdução</span>
+              </a>
+            </div>
+
+            <div class="mb-4 relative">
+              <a href="#conceitos" class="dropdown-btn flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all"
+                data-section="conceitos" data-explanation="Conceitos fundamentais do controle de versão com Git e GitHub.">
+                <i class="fas fa-lightbulb mr-2"></i>
+                <span class="flex items-center">Conceitos Fundamentais</span>
+                <i class="fas fa-chevron-right absolute end-4 transition-all transform"></i>
+              </a>
+              <div id="dd-conceitos" class="dropdown-content pl-6 mt-1">
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="repositorio" data-explanation="O que é um repositório no Git e GitHub">Repositório</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="commit" data-explanation="O que é um commit e como usá-lo">Commit</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="branch" data-explanation="Branches: ramificações do código">Branch</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="staging" data-explanation="Área de staging (index) no Git">Staging Area</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="remote" data-explanation="Remotes e conexão com GitHub">Remote / GitHub</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="fork" data-explanation="Fork: cópia de repositórios no GitHub">Fork</a>
+              </div>
+            </div>
+
+            <div class="mb-4 relative">
+              <a href="#comandos" class="dropdown-btn flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all"
+                data-section="comandos" data-explanation="Comandos essenciais do Git para o dia a dia do desenvolvedor.">
+                <i class="fas fa-terminal mr-2"></i>
+                <span class="flex items-center">Comandos Essenciais</span>
+                <i class="fas fa-chevron-right absolute end-4 transition-all transform"></i>
+              </a>
+              <div id="dd-comandos" class="dropdown-content pl-6 mt-1">
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="clone" data-explanation="Clonar repositórios com git clone">git clone</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="add-commit" data-explanation="Adicionar mudanças à staging e criar commits">git add &amp; commit</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="push-pull" data-explanation="Enviar (push) e baixar (pull) mudanças">git push &amp; pull</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="status-log" data-explanation="Verificar status e histórico de commits">git status &amp; log</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="branch-cmd" data-explanation="Criar, listar e trocar de branches">git branch &amp; checkout</a>
+              </div>
+            </div>
+
+            <div class="mb-4 relative">
+              <a href="#fluxo" class="dropdown-btn flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all"
+                data-section="fluxo" data-explanation="Fluxos de trabalho padrão para desenvolvimento com Git e GitHub.">
+                <i class="fas fa-sync-alt mr-2"></i>
+                <span class="flex items-center">Fluxo de Trabalho</span>
+                <i class="fas fa-chevron-right absolute end-4 transition-all transform"></i>
+              </a>
+              <div id="dd-fluxo" class="dropdown-content pl-6 mt-1">
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="iniciando" data-explanation="Como iniciar um novo projeto com Git">Iniciando um Projeto</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="diario" data-explanation="Workflow diário de desenvolvimento">Workflow Diário</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="conflitos" data-explanation="Como resolver conflitos de merge">Resolvendo Conflitos</a>
+              </div>
+            </div>
+
+            <div class="mb-4 relative">
+              <a href="#colaboracao" class="dropdown-btn flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all"
+                data-section="colaboracao" data-explanation="Colaboração com Pull Requests, Issues e contribuição open source.">
+                <i class="fas fa-users mr-2"></i>
+                <span class="flex items-center">Colaboração</span>
+                <i class="fas fa-chevron-right absolute end-4 transition-all transform"></i>
+              </a>
+              <div id="dd-colaboracao" class="dropdown-content pl-6 mt-1">
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="pr" data-explanation="Pull Requests e revisão de código">Pull Requests</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="issues" data-explanation="Issues para rastrear tarefas e bugs">Issues</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="fork-pr" data-explanation="Fork e fluxo de contribuição via Pull Request">Fork &amp; Contribuição</a>
+              </div>
+            </div>
+
+            <div class="mb-4 relative">
+              <a href="#avancado" class="dropdown-btn flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all"
+                data-section="avancado" data-explanation="Recursos avançados do GitHub: Actions, Projects e Releases.">
+                <i class="fas fa-rocket mr-2"></i>
+                <span class="flex items-center">Recursos Avançados</span>
+                <i class="fas fa-chevron-right absolute end-4 transition-all transform"></i>
+              </a>
+              <div id="dd-avancado" class="dropdown-content pl-6 mt-1">
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="actions" data-explanation="Automatizar workflows com GitHub Actions">GitHub Actions</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="projects" data-explanation="Gerenciar projetos com GitHub Projects">Projects</a>
+                <a href="#" class="nav-link flex items-center block px-3 py-2 rounded hover:bg-blue-100 text-blue-600 font-medium transition-all" data-section="releases" data-explanation="Publicar versões com Releases">Releases</a>
+              </div>
+            </div>
+
+            <div class="mt-8 border-t pt-4">
+              <h3 class="font-bold mb-2">Recursos Úteis</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a href="#" class="nav-link text-sm text-blue-600 hover:underline flex items-center"
+                    data-section="documentacao" data-explanation="Links para documentação oficial e leitura recomendada.">
+                    <i class="fas fa-external-link-alt mr-2 text-xs"></i>Leitura Recomendada
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="nav-link text-sm text-blue-600 hover:underline flex items-center"
+                    data-section="tutoriais" data-explanation="Tutoriais interativos e guias práticos do GitHub.">
+                    <i class="fas fa-book-open mr-2 text-xs"></i>Tutoriais
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+
+        <div id="content" class="flex flex-col flex-1 min-w-0">
+          <div id="explanation"></div>
+
+          <footer class="mt-12 border-t pt-8 text-center text-gray-600 text-sm">
+            <p>© 2026 Git e GitHub: Guia Prático. Todos os direitos reservados.</p>
+            <p class="mt-2">Este site é apenas para fins educacionais.</p>
+            <p class="mt-2 font-semibold text-blue-700">Criado por Lucas Fernandes &amp; David Delgado</p>
+            <div class="flex justify-center space-x-4 mt-4">
+              <a href="https://github.com/" target="_blank" class="text-blue-600 hover:text-blue-800">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </main>
+
+    <!-- TEMPLATES -->
+
+    <template id="tpl-introducao">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-play-circle text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Introdução ao Git e GitHub</h2>
+        </div>
+        <p class="text-gray-700 mb-4">
+          <strong>Git</strong> é um sistema de controle de versão distribuído criado por <strong>Linus Torvalds</strong> em 2005 para o desenvolvimento do kernel Linux. 
+          <strong>GitHub</strong> é a plataforma de hospedagem de código mais popular do mundo, construída em cima do Git, lançada em 2008 e adquirida pela Microsoft em 2018.
+        </p>
+        <p class="text-gray-700 mb-4">
+          Juntos, eles revolucionaram o desenvolvimento de software moderno: permitem colaboração em equipe, histórico completo de mudanças, branches para features, e integração contínua. 
+          Hoje são ferramentas obrigatórias para qualquer desenvolvedor, seja em projetos pessoais, open source ou empresas.
+        </p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Verificar se o Git está instalado</span>
+git --version
+
+<span class="comment"># Configurar nome e email (obrigatório para commits)</span>
+git config --global user.name "Seu Nome"
+git config --global user.email "seu@email.com"
+
+<span class="comment"># Ver configurações</span>
+git config --list</pre>
+        </div>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4">
+          <div class="flex">
+            <i class="fas fa-lightbulb text-blue-500 mr-3 mt-1"></i>
+            <div>
+              <h4 class="text-sm font-medium text-blue-800">Por que aprender Git/GitHub?</h4>
+              <ul class="mt-1 text-sm text-blue-700 list-disc list-inside">
+                <li>Controle total do histórico do seu código</li>
+                <li>Colaboração segura com equipes (mesmo remotas)</li>
+                <li>Backup automático e recuperação de versões anteriores</li>
+                <li>Essencial para contribuir em projetos open source</li>
+                <li>Requisito básico em quase todas as vagas de programação</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-conceitos">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-lightbulb text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Conceitos Fundamentais</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Antes de usar os comandos, é essencial entender os conceitos principais do Git. Esses termos aparecem o tempo todo no dia a dia do desenvolvedor.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <div class="bg-gray-50 rounded p-4 border"><strong class="text-blue-700">Repositório</strong> Pasta com todo o histórico de versões do projeto</div>
+          <div class="bg-gray-50 rounded p-4 border"><strong class="text-blue-700">Commit</strong> Um "snapshot" das mudanças salvas no histórico</div>
+          <div class="bg-gray-50 rounded p-4 border"><strong class="text-blue-700">Branch</strong> Linha independente de desenvolvimento (como uma cópia paralela)</div>
+          <div class="bg-gray-50 rounded p-4 border"><strong class="text-blue-700">Staging Area</strong> Área de preparação antes de criar um commit</div>
+          <div class="bg-gray-50 rounded p-4 border"><strong class="text-blue-700">Remote</strong> Repositório remoto (ex: GitHub, GitLab)</div>
+          <div class="bg-gray-50 rounded p-4 border"><strong class="text-blue-700">Fork</strong> Cópia pessoal de um repositório no GitHub</div>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-repositorio">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-folder-open text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Repositório (Repository)</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Um repositório Git é uma pasta que contém todos os arquivos do projeto + o histórico completo de todas as mudanças. Pode ser local (no seu computador) ou remoto (no GitHub).</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Criar um novo repositório local</span>
+git init meu-projeto
+cd meu-projeto
+
+<span class="comment"># Clonar um repositório existente do GitHub</span>
+git clone https://github.com/usuario/nome-do-repo.git</pre>
+        </div>
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+          <p class="text-sm text-yellow-700"><strong>Dica:</strong> Todo repositório Git tem uma pasta oculta chamada <code>.git</code> que armazena todo o histórico. Nunca delete essa pasta!</p>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-commit">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-save text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Commit</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Um commit é como uma "fotografia" do estado do seu projeto em um determinado momento. Cada commit tem uma mensagem descritiva, autor, data e um hash único (ex: <code>a1b2c3d</code>).</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Fluxo básico de commit</span>
+git add arquivo.txt          <span class="comment"># Adiciona à staging area</span>
+git commit -m "Adiciona arquivo de configuração"</pre>
+        </div>
+        <p class="text-gray-700">Boas mensagens de commit seguem o padrão: <strong>verbo no imperativo + o que foi feito</strong> (ex: "Corrige bug no login", "Adiciona validação de email").</p>
+      </div>
+    </template>
+
+    <template id="tpl-branch">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-code-branch text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Branch</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Branches permitem trabalhar em funcionalidades isoladas sem afetar o código principal (geralmente a branch <code>main</code> ou <code>master</code>). É uma das maiores vantagens do Git.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Criar e mudar para uma nova branch</span>
+git checkout -b feature/login
+
+<span class="comment"># Listar branches</span>
+git branch
+
+<span class="comment"># Voltar para a branch main</span>
+git checkout main
+
+<span class="comment"># Mesclar (merge) a feature na main</span>
+git merge feature/login</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-staging">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-layer-group text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Staging Area (Index)</h2>
+        </div>
+        <p class="text-gray-700 mb-4">A Staging Area é uma área intermediária onde você prepara exatamente quais mudanças farão parte do próximo commit. Permite commits granulares e organizados.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Adicionar arquivos específicos</span>
+git add index.html style.css
+
+<span class="comment"># Adicionar todos os arquivos modificados</span>
+git add .
+
+<span class="comment"># Remover da staging (mas manter mudanças)</span>
+git restore --staged arquivo.txt</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-remote">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-cloud text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Remote e GitHub</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Um remote é um repositório Git hospedado em outro lugar (GitHub, GitLab, Bitbucket). O GitHub é o mais popular e oferece interface web, Issues, Pull Requests, Actions, etc.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Adicionar remote (geralmente chamado origin)</span>
+git remote add origin https://github.com/seuusuario/meu-repo.git
+
+<span class="comment"># Enviar commits para o GitHub</span>
+git push -u origin main
+
+<span class="comment"># Baixar mudanças do remoto</span>
+git pull origin main</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-fork">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-code-branch text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Fork no GitHub</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Fork é criar uma cópia pessoal de um repositório de outra pessoa/organização na sua conta do GitHub. Usado principalmente para contribuir em projetos open source sem ter permissão direta de escrita.</p>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+          <p class="text-sm"><strong>Fluxo clássico de contribuição:</strong> Fork → Clone do seu fork → Criar branch → Fazer mudanças → Push → Abrir Pull Request no repositório original.</p>
+        </div>
+      </div>
+    </template>
+
+    <!-- COMANDOS -->
+    <template id="tpl-comandos">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-terminal text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Comandos Essenciais do Git</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Estes são os comandos que você usará diariamente. Domine-os e seu fluxo de trabalho ficará muito mais produtivo.</p>
+      </div>
+    </template>
+
+    <template id="tpl-clone">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-download text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">git clone</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Clona (baixa) um repositório remoto para o seu computador, incluindo todo o histórico.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Clonar via HTTPS (mais simples para iniciantes)</span>
+git clone https://github.com/usuario/repo.git
+
+<span class="comment"># Clonar via SSH (mais seguro para uso frequente)</span>
+git clone git@github.com:usuario/repo.git
+
+<span class="comment"># Clonar em uma pasta com nome diferente</span>
+git clone https://github.com/usuario/repo.git minha-pasta</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-add-commit">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-plus-circle text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">git add &amp; git commit</h2>
+        </div>
+        <p class="text-gray-700 mb-4">O fluxo clássico para salvar mudanças no histórico do Git.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># 1. Ver o que mudou</span>
+git status
+
+<span class="comment"># 2. Adicionar arquivos à staging area</span>
+git add .
+git add src/app.js
+
+<span class="comment"># 3. Criar o commit com mensagem</span>
+git commit -m "feat: adiciona validação de formulário"
+
+<span class="comment"># Atalho (adiciona tudo e commita de uma vez)</span>
+git commit -am "fix: corrige erro de digitação"</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-push-pull">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-exchange-alt text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">git push &amp; git pull</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Enviar (push) suas mudanças para o GitHub e baixar (pull) mudanças de outras pessoas.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Enviar commits locais para o remoto</span>
+git push origin main
+
+<span class="comment"># Primeira vez (define upstream)</span>
+git push -u origin main
+
+<span class="comment"># Baixar e mesclar mudanças do remoto</span>
+git pull origin main
+
+<span class="comment"># Apenas baixar (sem mesclar automaticamente)</span>
+git fetch origin</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-status-log">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-info-circle text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">git status &amp; git log</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Comandos de inspeção para entender o estado atual do repositório.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Ver arquivos modificados, staged e não rastreados</span>
+git status
+
+<span class="comment"># Histórico de commits (mais legível)</span>
+git log --oneline --graph --decorate
+
+<span class="comment"># Ver mudanças em um arquivo específico</span>
+git log --follow -- arquivo.txt
+
+<span class="comment"># Ver o que mudou em um commit específico</span>
+git show a1b2c3d</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-branch-cmd">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-code-branch text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">git branch &amp; git checkout</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Gerenciamento de branches é essencial para que se trabalhe em features isoladas.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Criar nova branch</span>
+git branch feature/nova-funcionalidade
+
+<span class="comment"># Mudar para a branch (checkout)</span>
+git checkout feature/nova-funcionalidade
+
+<span class="comment"># Criar + mudar de uma vez (atalho)</span>
+git checkout -b feature/nova-funcionalidade
+
+<span class="comment"># Deletar branch local (após merge)</span>
+git branch -d feature/nova-funcionalidade
+
+<span class="comment"># Ver todas as branches (incluindo remotas)</span>
+git branch -a</pre>
+        </div>
+      </div>
+    </template>
+
+    <!-- FLUXO DE TRABALHO -->
+    <template id="tpl-fluxo">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-sync-alt text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Fluxo de Trabalho</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Entender o fluxo completo de desenvolvimento com Git/GitHub é fundamental para trabalhar bem em equipe.</p>
+      </div>
+    </template>
+
+    <template id="tpl-iniciando">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-rocket text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Iniciando um Novo Projeto</h2>
+        </div>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># 1. Criar pasta e inicializar Git</span>
+mkdir meu-novo-projeto
+cd meu-novo-projeto
+git init
+
+<span class="comment"># 2. Adicionar arquivos e primeiro commit</span>
+echo "# Meu Projeto" &gt; README.md
+git add .
+git commit -m "chore: inicializa projeto"
+
+<span class="comment"># 3. Conectar ao GitHub</span>
+git remote add origin https://github.com/seuuser/meu-novo-projeto.git
+git push -u origin main</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-diario">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-calendar-day text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Workflow Diário</h2>
+        </div>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Manhã - atualizar código</span>
+git checkout main
+git pull origin main
+
+<span class="comment"># Criar branch para a tarefa</span>
+git checkout -b feature/minha-tarefa
+
+<span class="comment"># ... trabalhar no código ...</span>
+git add .
+git commit -m "feat: implementa validação de CPF"
+
+<span class="comment"># Final do dia - enviar para revisão</span>
+git push origin feature/minha-tarefa</pre>
+        </div>
+        <p class="text-sm text-gray-600">Depois crie um Pull Request no GitHub para revisão da equipe.</p>
+      </div>
+    </template>
+
+    <template id="tpl-conflitos">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-exclamation-triangle text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Resolvendo Conflitos de Merge</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Conflitos acontecem quando duas pessoas editam a mesma linha de código. O Git avisa e você precisa resolver manualmente.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Após git pull ou git merge aparecerão conflitos</span>
+git status   <span class="comment"># mostra arquivos com conflito</span>
+
+<span class="comment"># Abra o arquivo no editor - procure por &lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
+<span class="comment"># Resolva manualmente, depois:</span>
+git add arquivo-conflito.txt
+git commit -m "fix: resolve conflito de merge"</pre>
+        </div>
+      </div>
+    </template>
+
+    <!-- COLABORAÇÃO -->
+    <template id="tpl-colaboracao">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-users text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Colaboração no GitHub</h2>
+        </div>
+        <p class="text-gray-700 mb-4">O GitHub oferece ferramentas poderosas para trabalhar em equipe e contribuir com a comunidade open source.</p>
+      </div>
+    </template>
+
+    <template id="tpl-pr">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-code-pull-request text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Pull Requests (PR)</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Pull Request é o mecanismo principal de colaboração no GitHub. Permite propor mudanças, discutir código e fazer code review antes de mesclar na branch principal.</p>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+          <p class="text-sm"><strong>Passos típicos:</strong> Criar branch → Fazer commits → Push → Abrir PR no GitHub → Revisão da equipe → Aprovação → Merge</p>
+        </div>
+        <p class="text-gray-700">Dica: Sempre escreva uma boa descrição no PR explicando o "por quê" da mudança.</p>
+      </div>
+    </template>
+
+    <template id="tpl-issues">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-tasks text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Issues</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Issues são usadas para rastrear bugs, tarefas, melhorias e discussões. Podem ser vinculadas a Pull Requests e Projects.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># No GitHub web você cria Issues com labels, milestones e assign</span>
+<span class="comment"># Exemplo de labels comuns:</span>
+bug, enhancement, documentation, help wanted, good first issue</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-fork-pr">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-external-link-alt text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Fork &amp; Contribuição Open Source</h2>
+        </div>
+        <p class="text-gray-700 mb-4">O fluxo mais comum para contribuir em projetos que você não é mantenedor:</p>
+        <ol class="list-decimal list-inside text-gray-700 space-y-1 mb-4">
+          <li>Faça Fork do repositório no GitHub</li>
+          <li>Clone o seu fork: <code>git clone https://github.com/SEUUSER/repo.git</code></li>
+          <li>Crie uma branch: <code>git checkout -b minha-contribuicao</code></li>
+          <li>Faça suas mudanças e commits</li>
+          <li>Push para o seu fork</li>
+          <li>No GitHub, abra um Pull Request do seu fork para o repositório original</li>
+        </ol>
+      </div>
+    </template>
+
+    <!-- AVANÇADO -->
+    <template id="tpl-avancado">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-rocket text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Recursos Avançados do GitHub</h2>
+        </div>
+        <p class="text-gray-700 mb-4">O GitHub oferece muito mais que apenas hospedagem de código. Conheça os recursos que elevam sua produtividade.</p>
+      </div>
+    </template>
+
+    <template id="tpl-actions">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-play-circle text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">GitHub Actions</h2>
+        </div>
+        <p class="text-gray-700 mb-4">GitHub Actions permite criar workflows automatizados de CI/CD diretamente no repositório. Executa testes, builds, deploys, etc. automaticamente.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Exemplo básico de workflow (.github/workflows/ci.yml)</span>
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: npm test</pre>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-projects">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-tasks text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">GitHub Projects</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Projects é um sistema de gerenciamento de tarefas integrado ao GitHub. Pode ser usado como Kanban, roadmap ou lista de tarefas, com automações baseadas em Issues e PRs.</p>
+        <p class="text-gray-700">Muito usado por equipes para organizar sprints e backlog de produto.</p>
+      </div>
+    </template>
+
+    <template id="tpl-releases">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-tag text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Releases</h2>
+        </div>
+        <p class="text-gray-700 mb-4">Releases permitem publicar versões oficiais do seu projeto com notas de versão, assets (binários, instaladores) e changelogs automáticos baseados nos commits.</p>
+        <div class="code-block mb-4">
+          <pre><span class="comment"># Criar tag e release via linha de comando</span>
+git tag -a v1.0.0 -m "Primeira versão estável"
+git push origin v1.0.0</pre>
+        </div>
+      </div>
+    </template>
+
+    <!-- RECURSOS -->
+    <template id="tpl-documentacao">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-book text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Leitura Recomendada</h2>
+        </div>
+        <ul class="space-y-3 text-gray-700">
+          <li><a href="https://git-scm.com/book/pt-br/v2" target="_blank" class="text-blue-600 hover:underline">Pro Git Book (gratuito, oficial)</a> -> É O melhor livro sobre Git</li>
+          <li><a href="https://docs.github.com/pt" target="_blank" class="text-blue-600 hover:underline">Documentação Oficial do GitHub</a></li>
+          <li><a href="https://www.atlassian.com/git/tutorials" target="_blank" class="text-blue-600 hover:underline">Git Tutorials - Atlassian</a></li>
+          <li><a href="https://ohmygit.org/" target="_blank" class="text-blue-600 hover:underline">Oh My Git! (jogo interativo)</a></li>
+        </ul>
+      </div>
+    </template>
+
+    <template id="tpl-tutoriais">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-graduation-cap text-blue-600 text-2xl mr-3"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Tutoriais e Prática</h2>
+        </div>
+        <ul class="space-y-3 text-gray-700">
+          <li><a href="https://learngitbranching.js.org/" target="_blank" class="text-blue-600 hover:underline">Learn Git Branching</a> -> Melhor forma visual de aprender branches</li>
+          <li><a href="https://github.com/firstcontributions/first-contributions" target="_blank" class="text-blue-600 hover:underline">First Contributions</a> -> Guia para seu primeiro Pull Request</li>
+          <li><strong>Prática:</strong> Crie um repositório hoje mesmo e comece a versionar seus projetos pessoais!</li>
+        </ul>
+      </div>
+    </template>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const templates = {};
+        document.querySelectorAll("template").forEach((t) => {
+          templates[t.id.replace("tpl-", "")] = t.innerHTML;
+        });
+
+        const contentDiv = document.getElementById("explanation");
+        const navLinks = document.querySelectorAll(".nav-link");
+        const dropdownBtns = document.querySelectorAll(".dropdown-btn");
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchResults = document.getElementById("search-results");
+
+        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+        const closeSidebarBtn = document.getElementById("close-sidebar-btn");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebar-overlay");
+
+        function openSidebar() {
+          sidebar.classList.remove("-translate-x-full");
+          sidebarOverlay.classList.remove("hidden");
+          document.body.classList.add("overflow-hidden");
+        }
+
+        function closeSidebar() {
+          sidebar.classList.add("-translate-x-full");
+          sidebarOverlay.classList.add("hidden");
+          document.body.classList.remove("overflow-hidden");
+        }
+
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", openSidebar);
+        if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", closeSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
+
+        function loadSection(sectionId) {
+          if (templates[sectionId]) {
+            contentDiv.innerHTML = templates[sectionId];
+            navLinks.forEach((link) => link.classList.remove("bg-blue-100", "font-bold"));
+            const activeLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+            if (activeLink) activeLink.classList.add("bg-blue-100", "font-bold");
+            localStorage.setItem("activeSectionId", sectionId);
+          }
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            loadSection(link.dataset.section);
+            if (window.innerWidth < 768) {
+              closeSidebar();
+            }
+          });
+        });
+
+        dropdownBtns.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector(".fa-chevron-right");
+            content.classList.toggle("open");
+            if (content.classList.contains("open")) {
+              icon.style.transform = "rotate(90deg)";
+            } else {
+              icon.style.transform = "rotate(0deg)";
+            }
+          });
+        });
+
+        searchInput.addEventListener("input", (e) => {
+          const query = e.target.value.toLowerCase();
+          searchResults.innerHTML = "";
+          
+          if (query.length > 1) {
+            navLinks.forEach((link) => {
+              const text = link.textContent.toLowerCase();
+              const explanation = link.dataset.explanation ? link.dataset.explanation.toLowerCase() : "";
+              if (text.includes(query) || explanation.includes(query)) {
+                const div = document.createElement("div");
+                div.className = "p-2 hover:bg-gray-100 cursor-pointer text-gray-800";
+                div.textContent = link.textContent;
+                div.addEventListener("click", () => {
+                  loadSection(link.dataset.section);
+                  searchResults.classList.add("hidden");
+                  searchInput.value = "";
+                  if (window.innerWidth < 768) {
+                    closeSidebar();
+                  }
+                });
+                searchResults.appendChild(div);
+              }
+            });
+            searchResults.classList.remove("hidden");
+          } else {
+            searchResults.classList.add("hidden");
+          }
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.add("hidden");
+          }
+        });
+
+        const lastSection = localStorage.getItem("activeSectionId");
+        const sectionToLoad = lastSection && templates[lastSection] ? lastSection : "introducao";
+
+        const parentDropdownMap = {
+          "repositorio": "dd-conceitos", "commit": "dd-conceitos", "branch": "dd-conceitos", "staging": "dd-conceitos", "remote": "dd-conceitos", "fork": "dd-conceitos",
+          "clone": "dd-comandos", "add-commit": "dd-comandos", "push-pull": "dd-comandos", "status-log": "dd-comandos", "branch-cmd": "dd-comandos",
+          "iniciando": "dd-fluxo", "diario": "dd-fluxo", "conflitos": "dd-fluxo",
+          "pr": "dd-colaboracao", "issues": "dd-colaboracao", "fork-pr": "dd-colaboracao",
+          "actions": "dd-avancado", "projects": "dd-avancado", "releases": "dd-avancado",
+        };
+
+        const parentId = parentDropdownMap[sectionToLoad];
+        if (parentId) {
+          const dd = document.getElementById(parentId);
+          if (dd) {
+            dd.classList.add("open");
+            const btn = dd.previousElementSibling;
+            if (btn) {
+              const icon = btn.querySelector(".fa-chevron-right");
+              if (icon) icon.style.transform = "rotate(90deg)";
+            }
+          }
+        }
+        loadSection(sectionToLoad);
+      });
+    </script>
+  </body>
+</html>
